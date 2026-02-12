@@ -14,7 +14,7 @@ You are expected to create and organize your code into the following directories
 
 - `src/controllers`: Contains the request handlers (controller functions) that implement the logic for each API endpoint.
 - `src/models`: Defines the Mongoose schemas for your database collections (`User`, `RefreshToken`).
-- `src/middlewares`: Holds custom middleware functions, such as for error handling, 404 errors, and request validation.
+- `src/middleware`: Holds custom middleware functions, such as for error handling, 404 errors, and request validation.
 - `src/routes`: Defines the API routes and maps them to the corresponding controller functions.
 - `src/schemas`: Contains Zod schemas for validating the request bodies of incoming requests.
 - `src/utils`: Includes utility functions, such as those for creating and managing JSON Web Tokens (JWTs).

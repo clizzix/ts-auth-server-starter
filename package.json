@@ -8,9 +8,9 @@
       "development": "./src/controllers/index.ts",
       "default": "./dist/controllers/index.js"
     },
-    "#middlewares": {
-      "development": "./src/middlewares/index.ts",
-      "default": "./dist/middlewares/index.js"
+    "#middleware": {
+      "development": "./src/middleware/index.ts",
+      "default": "./dist/middleware/index.js"
     },
     "#models": {
       "development": "./src/models/index.ts",
@@ -25,8 +25,8 @@
       "default": "./dist/schemas/index.js"
     },
     "#db": {
-      "development": "./src/db.ts",
-      "default": "./dist/db.js"
+      "development": "./src/db/index.ts",
+      "default": "./dist/db/index.js"
     },
     "#config": {
       "development": "./src/config/index.ts",
