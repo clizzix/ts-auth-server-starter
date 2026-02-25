@@ -24,6 +24,7 @@ if (!parsedEnv.success) {
 
 export const {
   ACCESS_JWT_SECRET,
+  ACCESS_TOKEN_TTL,
   DB_NAME,
   CLIENT_BASE_URL,
   MONGO_URI,
