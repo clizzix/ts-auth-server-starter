@@ -4,10 +4,9 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import { authRoutes } from '#routes';
 import { errorHandler, notFoundHandler } from '#middleware';
-import { CLIENT_BASE_URL } from '#config';
+import { CLIENT_BASE_URL, PORT } from '#config';
 
 const app = express();
-const port = process.env.PORT || '3000';
 
 app.use(
   cors({
@@ -24,6 +23,6 @@ app.use('/auth', authRoutes);
 app.use('*splat', notFoundHandler);
 app.use(errorHandler);
 
-app.listen(port, () => {
-  console.log(`Auth Server listening on port ${port}`);
+app.listen(PORT, () => {
+  console.log(`Auth Server listening on http://localhost:${PORT}`);
 });

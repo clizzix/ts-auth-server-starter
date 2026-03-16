@@ -12,7 +12,8 @@ const envSchema = z.object({
       error: 'ACCESS_JWT_SECRET is required and must be at least 64 characters long'
     })
     .min(64),
-  CLIENT_BASE_URL: z.url().default('http://localhost:5173')
+  CLIENT_BASE_URL: z.url().default('http://localhost:5173'),
+  PORT: z.int().default(3000)
 });
 
 const parsedEnv = envSchema.safeParse(process.env);
@@ -29,5 +30,6 @@ export const {
   CLIENT_BASE_URL,
   MONGO_URI,
   REFRESH_TOKEN_TTL,
-  SALT_ROUNDS
+  SALT_ROUNDS,
+  PORT
 } = parsedEnv.data;
