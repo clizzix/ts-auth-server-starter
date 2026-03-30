@@ -2,15 +2,25 @@ import { Schema, model } from 'mongoose';
 
 const userSchema = new Schema(
   {
-    // TODO: create a mongoose schema for storing user data
-    // Add firstName, lastName, email, password and a string array for roles
-    // make sure that the email is unique and the password hashed before saving
+    firstName: { type: String, required: [true, 'First name is required'] },
+    lastName: { type: String, required: [true, 'Last name is required'] },
+    email: {
+      type: String,
+      required: true,
+      unique: true
+    },
+    password: {
+      type: String,
+      required: true
+    },
+    roles: {
+      type: [String],
+      default: ['user']
+    }
   },
   {
-    timestamps: { createdAt: true, updatedAt: false }
+    timestamps: true
   }
 );
 
-const User = model('User', userSchema);
-
-export default User;
+export default model('User', userSchema);

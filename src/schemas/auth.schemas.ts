@@ -1,17 +1,17 @@
-import { z } from 'zod/v4';
+import { z } from 'zod';
 
-const emailError = 'Please provide a valid email address.';
-const emailSchema = z.string({ error: emailError }).trim().email({ error: emailError });
+const emailSchema = z
+  .email({ error: 'Please provide a valid email address.' })
+  .toLowerCase()
+  .trim();
 
 const basePasswordSchema = z
   .string({ error: 'Password must be a string' })
   .min(12, { error: 'Password must be at least 12 characters.' })
   .max(512, { error: 'The length of this Password is excessive.' });
 
-const serviceSchema = z.string().max(128).optional();
-
 export const registerSchema = z
-  .object(
+  .strictObject(
     {
       email: emailSchema,
       password: basePasswordSchema
@@ -22,15 +22,16 @@ export const registerSchema = z
           error: 'Password must include at least one special character'
         }),
       confirmPassword: z.string(),
-      firstName: z.string().min(1).max(50).optional(),
-      lastName: z.string().min(1).max(50).optional()
+      firstName: z.string().min(1).max(50),
+      lastName: z.string().min(1).max(50)
     },
     { error: 'Please provide a valid email and a secure password.' }
   )
-  .strict()
-  .refine(data => data.password === data.confirmPassword, { error: "Passwords don't match" });
+  .refine(data => data.password === data.confirmPassword, { error: "Passwords don't match" })
+  // with this registerSchema.safeParse() will include confirmPassword as a required field, but remove it from the output
+  .transform(({ confirmPassword, ...rest }) => rest);
 
-export const loginSchema = z.object({
+export const loginSchema = z.strictObject({
   email: emailSchema,
   password: basePasswordSchema
 });
