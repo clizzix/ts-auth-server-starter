@@ -20,11 +20,13 @@
     "module": "preserve",
     "noEmit": false,
     "outDir": "dist",
+    "rootDir": "./src",
     /* Paths */
     "baseUrl": "./src",
     "paths": {
       "#*": ["*"]
-    }
+    },
+    "ignoreDeprecations": "6.0"
   },
   "include": ["src"]
 }
