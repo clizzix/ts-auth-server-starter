@@ -9,7 +9,11 @@ const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
   if (err instanceof Error) {
     // check if cause property exists, is an object, and has a 'status' property
     if (err.cause && typeof err.cause === 'object' && 'status' in err.cause) {
-      statusCode = err.cause.status as number;
+      const { status, code } = err.cause as { status: number; code?: string };
+      statusCode = status;
+
+      if (code === 'ACCESS_TOKEN_EXPIRED')
+        res.setHeader('WWW-Authenticate', 'Bearer error:"token_expired"');
     }
     errorMessage = err.message;
   }

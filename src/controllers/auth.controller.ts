@@ -1,10 +1,11 @@
 import type { RequestHandler } from 'express';
-import { REFRESH_TOKEN_TTL, SALT_ROUNDS } from '#config';
+import { ACCESS_JWT_SECRET, REFRESH_TOKEN_TTL, SALT_ROUNDS } from '#config';
 import { RefreshToken, User } from '#models';
 import type { registerSchema, loginSchema } from '#schemas';
 import { z } from 'zod';
 import bcrypt from 'bcrypt';
 import { signAccessToken, createAndPersistRefreshToken } from '#utils';
+import jwt from 'jsonwebtoken';
 
 type RegisterinputDTO = z.infer<typeof registerSchema>;
 type LoginInputDTO = z.infer<typeof loginSchema>;
@@ -40,7 +41,7 @@ export const register: RequestHandler<unknown, unknown, RegisterinputDTO> = asyn
 };
 
 export const login: RequestHandler<unknown, unknown, LoginInputDTO> = async (req, res) => {
-  // TODO: Implement user login
+  // Implement user login
   // Query the DB for an existing user with that email (make sure to .select('+password') so we can compare it to the hashed password)
   const { email, password } = req.body;
   if (!email || !password) {
@@ -70,7 +71,7 @@ export const login: RequestHandler<unknown, unknown, LoginInputDTO> = async (req
 };
 
 export const refresh: RequestHandler = async (req, res) => {
-  // TODO: Implement access token refresh and refresh token rotation
+  // Implement access token refresh and refresh token rotation
   // Destructure the refreshToken from req.cookies
   const { refreshToken } = req.cookies;
   if (!refreshToken) {
@@ -104,24 +105,39 @@ export const refresh: RequestHandler = async (req, res) => {
 };
 
 export const logout: RequestHandler = async (req, res) => {
-  // TODO: Implement logout by removing the tokens
-  //   Get the refreshToken cookie
+  // Implement logout by removing the tokens
+  // Get the refreshToken cookie
+  const { refreshToken } = req.cookies;
   // If a refreshToken cookie is found, delete the corresponding stored token from the database
+  if (refreshToken) await RefreshToken.deleteOne({ token: refreshToken });
   // Clear the refreshToken cookie
+  res.clearCookie('refreshToken');
   // Send a success message in the response body
-  res.json({ message: 'DELETE /refresh' });
+  res.json({ message: 'Refresh token has been removed successfully' });
 };
 
 export const me: RequestHandler = async (req, res, next) => {
-  // TODO: Implement a me handler
-  // Get the access token from the request headers
-  // Get the Authorization header from the request
-  // Isolate the access token
-  // Throw an error if there is not access token
-  // Verify the access token
-  // If token is expired, add code: ACCESS_TOKEN_EXPIRED to error
-  // Query the database for the user who is the sub of the access token
-  // Throw an error if no user is found
-  // Send user profile with success message in response body
-  res.json({ message: 'GET /me' });
+  try {
+    const authHeader = req.header('authorization');
+    const accessToken = authHeader?.startsWith('Bearer') && authHeader.split(' ')[1];
+    if (!accessToken) throw new Error('Access token is required', { cause: { status: 401 } });
+
+    const decoded = jwt.verify(accessToken, ACCESS_JWT_SECRET) as jwt.JwtPayload;
+
+    const user = await User.findById(decoded.sub);
+    if (!user) throw new Error('User not found', { cause: { status: 401 } });
+
+    res.json({ message: 'User profile', user });
+  } catch (error) {
+    if (error instanceof jwt.TokenExpiredError) {
+      next(
+        new Error('Expired access token', {
+          cause: { status: 401, code: 'ACCESST_TOKEN_EXPIRED' }
+        })
+      );
+    } else {
+      next(new Error('Invalid access token', { cause: { status: 401 } }));
+    }
+    next(error);
+  }
 };
