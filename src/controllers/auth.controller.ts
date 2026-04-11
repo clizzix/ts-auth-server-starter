@@ -64,7 +64,7 @@ export const login: RequestHandler<unknown, unknown, LoginInputDTO> = async (req
   await RefreshToken.deleteMany({ userId: user._id });
   // Generate access token (JWT) and refresh token (random string saved to database)
   const accessToken = signAccessToken(user._id.toString(), user.roles);
-  const refreshToken = createAndPersistRefreshToken(user._id.toString());
+  const refreshToken = await createAndPersistRefreshToken(user._id.toString());
   // Send the access token (in the response body) and the refresh token (in a cookie)
   res.cookie('refreshToken', refreshToken, cookieOptions);
   res.json({ message: 'Logged in successfully', accessToken });
